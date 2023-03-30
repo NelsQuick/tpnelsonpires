@@ -1,0 +1,52 @@
+<?php
+// Définition de la classe Emprunt
+class Emprunt {
+  public $book_id;
+  public $client_id;
+  public $start_date;
+  public $end_date;
+
+  public function __construct($book_id, $client_id, $start_date, $end_date) {
+    $this->book_id = $book_id;
+    $this->client_id = $client_id;
+    $this->start_date = $start_date;
+    $this->end_date = $end_date;
+  }
+}
+
+// Connexion à la base de données
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "biblioapp";
+
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Vérification de la connexion
+if ($conn->connect_error) {
+  die("Connection failed: " . $conn->connect_error);
+}
+
+// Récupération des données d'emprunts depuis la base de données
+$sql = "SELECT book_id, client_id, start_date, end_date FROM rentals";
+$result = $conn->query($sql);
+
+$emprunts = array();
+if ($result->num_rows > 0) {
+  while($row = $result->fetch_assoc()) {
+    $emprunt = new Emprunt($row["book_id"], $row["client_id"], $row["start_date"], $row["end_date"]);
+    array_push($emprunts, $emprunt);
+  }
+}
+
+// Affichage de la liste des emprunts
+echo "<h1>Liste des emprunts</h1>";
+echo "<table>";
+echo "<tr><th>Nom du livre</th><th>Personne qui emprunte</th><th>Date de début</th><th>Date de fin</th></tr>";
+foreach ($emprunts as $emprunt) {
+  echo "<tr><td>".$emprunt->book_id."</td><td>".$emprunt->client_id."</td><td>".$emprunt->start_date."</td><td>".$emprunt->end_date."</td></tr>";
+}
+echo "</table>";
+
+
+?>
